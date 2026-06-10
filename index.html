@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{height:100%;height:100dvh}
+body{
+  width:100%;
+  height:100%;
+  height:100dvh;
+  background:#000;
+  overflow:hidden;
+  display:flex;
+  justify-content:center;
+  align-items:stretch;
+  font-family:Arial,sans-serif;
+}
+#g{
+  width:100%;
+  height:100%;
+  height:100dvh;
+  max-width:480px;
+  display:flex;
+  flex-direction:column;
+  background:#000;
+}
+#hdr{
+  background:#111;
+  padding:12px 16px;
+  padding-top:max(12px, env(safe-area-inset-top));
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+}
+#hdr h1{color:#fff;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
+.hs .v{color:#fff;font-size:22px;font-weight:600;display:block;text-align:center;line-height:1}
+.hs .l{color:#555;font-size:10px;display:block;text-align:center;margin-top:2px;letter-spacing:0.5px}
+#pb{background:#222;height:3px;flex-shrink:0}
+#pf{background:#fff;height:3px;width:0%;transition:width 0.4s}
+#lb{
+  background:#111;
+  padding:7px 16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-shrink:0;
+  border-top:0.5px solid #1f1f1f;
+}
+#li{color:#555;font-size:11px;letter-spacing:0.3px}
+#lp{color:#fff;font-size:11px;font-weight:600}
+#bw{
+  background:#0a0a0a;
+  padding:10px;
+  position:relative;
+  flex:1;
+  display:flex;
+  align-items:center;
+}
+#bd{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  gap:4px;
+  width:100%;
+}
+.c{
+  aspect-ratio:1/1;
+  border-radius:7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  background:#1a1a1a;
+  border:0.5px solid #2a2a2a;
+  font-size:clamp(14px,4.5vw,24px);
+  transition:transform 0.08s;
+  user-select:none;
+}
+.c:active{transform:scale(0.9)}
+.c.sel{
+  background:#2a2a2a;
+  outline:2px solid #fff;
+  transform:scale(1.08);
+}
+.c.hi{outline:2px solid rgba(255,255,255,0.5)}
+.c.fade{opacity:0.08}
+#ftr{
+  background:#111;
+  padding:10px 16px;
+  padding-bottom:max(10px, env(safe-area-inset-bottom));
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  flex-shrink:0;
+  border-top:0.5px solid #1f1f1f;
+}
+#msg{color:#555;font-size:11px;flex:1}
+#hbtn{
+  background:#1a1a1a;
+  border:0.5px solid #333;
+  color:#888;
+  font-size:11px;
+  padding:7px 14px;
+  border-radius:8px;
+  cursor:pointer;
+}
+#ov{
+  display:none;
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,0.95);
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:14px;
+  z-index:9;
+  padding:30px 24px;
+  text-align:center;
+}
+#ov.on{display:flex}
+#oi{font-size:56px;line-height:1}
+#ot{color:#fff;font-size:20px;font-weight:600;letter-spacing:0.3px}
+#osb{color:#555;font-size:13px;line-height:1.6}
+#opts{
+  color:#fff;
+  font-size:14px;
+  background:#1a1a1a;
+  padding:10px 22px;
+  border-radius:10px;
+  border:0.5px solid #333;
+}
+#nb{
+  background:#fff;
+  color:#000;
+  border:none;
+  padding:14px 32px;
+  border-radius:12px;
+  font-size:15px;
+  cursor:pointer;
+  font-weight:700;
+  width:100%;
+  max-width:260px;
+}
+#rb{
+  background:transparent;
+  color:#444;
+  border:0.5px solid #2a2a2a;
+  padding:10px 24px;
+  border-radius:10px;
+  font-size:13px;
+  cursor:pointer;
+  width:100%;
+  max-width:260px;
+}
+</style>
+</head>
+<body>
+<div id="g">
+  <div id="hdr">
+    <div class="hs"><span class="v" id="sv">0</span><span class="l">ОЧКИ</span></div>
+    <h1>Завариваем в ЧК</h1>
+    <div class="hs"><span class="v" id="mv">25</span><span class="l">ХОДОВ</span></div>
+  </div>
+  <div id="pb"><div id="pf"></div></div>
+  <div id="lb">
+    <span id="li">Раунд 1 из 10</span>
+    <span id="lp">+100 ₸ на бонус</span>
+  </div>
+  <div id="bw">
+    <div id="bd"></div>
+    <div id="ov">
+      <div id="oi">🏆</div>
+      <div id="ot">Раунд пройден!</div>
+      <div id="osb">Отличная работа!</div>
+      <div id="opts"></div>
+      <button id="nb">Следующий раунд</button>
+      <button id="rb">Начать заново</button>
+    </div>
+  </div>
+  <div id="ftr">
+    <div id="msg">Собирай цепочки из 3+</div>
+    <button id="hbtn">Подсказка</button>
+  </div>
+</div>
+
+<script>
+// Telegram WebApp init
+if(window.Telegram && window.Telegram.WebApp){
+  var tg = window.Telegram.WebApp;
+  tg.ready();
+  tg.expand();
+  tg.disableVerticalSwipes && tg.disableVerticalSwipes();
+  if(tg.requestFullscreen) tg.requestFullscreen();
+}
+
+var TSETS=[
+  ['☕','🫘','🥐','🍵'],
+  ['☕','🫘','🥐','🍵','🧁'],
+  ['☕','🫘','🥐','🍵','🧁','🍫']
+];
+var NM=['кофе','зёрна','круассан','чай','кекс','шоколад'];
+var LV=[
+  {goal:250,moves:25,ti:0,prize:'+100 ₸ на бонус',   icon:'💰',desc:'100 тенге на бонусный счёт!'},
+  {goal:300,moves:24,ti:0,prize:'+200 ₸ на бонус',   icon:'💰',desc:'200 тенге на бонусный счёт!'},
+  {goal:350,moves:23,ti:0,prize:'+300 ₸ на бонус',   icon:'💰',desc:'300 тенге на бонусный счёт!'},
+  {goal:400,moves:22,ti:0,prize:'+400 ₸ на бонус',   icon:'💰',desc:'400 тенге на бонусный счёт!'},
+  {goal:450,moves:21,ti:0,prize:'+500 ₸ на бонус',   icon:'💰',desc:'500 тенге на бонусный счёт!'},
+  {goal:900,moves:16,ti:1,prize:'Орешек со сгущёнкой',icon:'🥜',desc:'Орешек со сгущёнкой — твой!'},
+  {goal:1100,moves:14,ti:1,prize:'Печенька',          icon:'🍪',desc:'Печенька уже ждёт тебя!'},
+  {goal:1350,moves:12,ti:1,prize:'Фильтр кофе',       icon:'☕',desc:'Фильтр кофе от бариста!'},
+  {goal:2000,moves:10,ti:2,prize:'Мерч ЧК',           icon:'👕',desc:'Крутой мерч от ЧК!'},
+  {goal:2800,moves:9, ti:2,prize:'Завтрак на выбор',  icon:'🍳',desc:'Завтрак на выбор — заслужил!'}
+];
+var R=7,C=8;
+var board=[],score=0,moves=0,sel=null,busy=false,lvl=0,curT=[];
+
+function randTile(r,c){
+  var n=curT.length,t,tries=0;
+  do{t=Math.floor(Math.random()*n);tries++;if(tries>50)break;}
+  while(
+    (c>=2&&board[r][c-1]===t&&board[r][c-2]===t)||
+    (r>=2&&board[r-1]&&board[r-1][c]===t&&board[r-2]&&board[r-2][c]===t)
+  );
+  return t;
+}
+
+function initBoard(){
+  board=[];
+  for(var r=0;r<R;r++){board[r]=[];for(var c=0;c<C;c++)board[r][c]=randTile(r,c);}
+}
+
+function startLevel(l){
+  lvl=l;score=0;sel=null;busy=false;
+  moves=LV[l].moves;curT=TSETS[LV[l].ti];
+  document.getElementById('ov').classList.remove('on');
+  document.getElementById('li').textContent='Раунд '+(l+1)+' из 10';
+  document.getElementById('lp').textContent=LV[l].prize;
+  document.getElementById('pf').style.width='0%';
+  initBoard();render();
+  setMsg('Цель: '+LV[l].goal+' очков');
+}
+
+function render(){
+  var bd=document.getElementById('bd');
+  bd.innerHTML='';
+  for(var r=0;r<R;r++){
+    for(var c=0;c<C;c++){
+      var d=document.createElement('div');
+      d.className='c';
+      d.textContent=board[r][c]>=0?curT[board[r][c]]:'';
+      if(sel&&sel[0]===r&&sel[1]===c)d.classList.add('sel');
+      d.addEventListener('click',(function(rr,cc){return function(){tap(rr,cc);};})(r,c));
+      bd.appendChild(d);
+    }
+  }
+  document.getElementById('sv').textContent=score;
+  document.getElementById('mv').textContent=moves;
+  document.getElementById('pf').style.width=Math.min(100,Math.round(score/LV[lvl].goal*100))+'%';
+}
+
+function tap(r,c){
+  if(busy)return;clearHi();
+  if(!sel){sel=[r,c];render();setMsg(NM[board[r][c]]+' выбран');return;}
+  var sr=sel[0],sc=sel[1];
+  if(sr===r&&sc===c){sel=null;render();return;}
+  if(Math.abs(sr-r)+Math.abs(sc-c)!==1){sel=[r,c];render();return;}
+  sel=null;doSwap(sr,sc,r,c);
+}
+
+function swapT(r1,c1,r2,c2){var t=board[r1][c1];board[r1][c1]=board[r2][c2];board[r2][c2]=t;}
+
+function doSwap(r1,c1,r2,c2){
+  busy=true;swapT(r1,c1,r2,c2);
+  var m=findM();
+  if(!m.length){swapT(r1,c1,r2,c2);busy=false;render();setMsg('Нет совпадений — пробуй ещё!');return;}
+  moves--;processM(m);
+}
+
+function findM(){
+  var f={},r,c,l,i;
+  for(r=0;r<R;r++){
+    for(c=0;c<C-2;c++){
+      if(board[r][c]===board[r][c+1]&&board[r][c]===board[r][c+2]){
+        l=3;while(c+l<C&&board[r][c+l]===board[r][c])l++;
+        for(i=0;i<l;i++)f[r*C+(c+i)]=1;c+=l-1;
+      }
+    }
+  }
+  for(c=0;c<C;c++){
+    for(r=0;r<R-2;r++){
+      if(board[r][c]===board[r+1][c]&&board[r][c]===board[r+2][c]){
+        l=3;while(r+l<R&&board[r+l][c]===board[r][c])l++;
+        for(i=0;i<l;i++)f[(r+i)*C+c]=1;r+=l-1;
+      }
+    }
+  }
+  return Object.keys(f).map(function(k){var n=parseInt(k);return{r:Math.floor(n/C),c:n%C};});
+}
+
+function processM(m){
+  var pts=m.length*10+(m.length>3?(m.length-3)*20:0);
+  score+=pts;render();
+  setMsg(NM[board[m[0].r][m[0].c]]+' x'+m.length+' +'+pts+' очков!');
+  var bd=document.getElementById('bd');
+  m.forEach(function(p){var el=bd.children[p.r*C+p.c];if(el)el.classList.add('fade');});
+  setTimeout(function(){
+    m.forEach(function(p){board[p.r][p.c]=-1;});
+    gravity();
+    var nm=findM();
+    if(nm.length){setTimeout(function(){processM(nm);},280);}
+    else{busy=false;render();checkEnd();}
+  },300);
+}
+
+function gravity(){
+  var c,r,e;
+  for(c=0;c<C;c++){
+    e=R-1;
+    for(r=R-1;r>=0;r--){if(board[r][c]!==-1){board[e][c]=board[r][c];if(e!==r)board[r][c]=-1;e--;}}
+    for(r=e;r>=0;r--)board[r][c]=Math.floor(Math.random()*curT.length);
+  }
+}
+
+function checkEnd(){
+  var L=LV[lvl],ov=document.getElementById('ov');
+  if(score>=L.goal){
+    document.getElementById('oi').textContent=L.icon;
+    document.getElementById('ot').textContent='Раунд '+(lvl+1)+' пройден!';
+    document.getElementById('osb').textContent=L.desc;
+    document.getElementById('opts').textContent='Набрано '+score+' очков';
+    var nb=document.getElementById('nb');
+    if(lvl>=9){nb.textContent='Играть снова!';nb.onclick=function(){startLevel(0);};}
+    else{nb.textContent='Следующий раунд →';nb.onclick=function(){startLevel(lvl+1);};}
+    ov.classList.add('on');
+  }else if(moves<=0){
+    document.getElementById('oi').textContent='😔';
+    document.getElementById('ot').textContent='Ходы закончились';
+    document.getElementById('osb').textContent='Не хватило '+(L.goal-score)+' очков до приза';
+    document.getElementById('opts').textContent=score+' из '+L.goal;
+    document.getElementById('nb').textContent='Попробовать снова';
+    document.getElementById('nb').onclick=function(){startLevel(lvl);};
+    ov.classList.add('on');
+  }
+}
+
+function clearHi(){document.querySelectorAll('.hi').forEach(function(el){el.classList.remove('hi');});}
+
+function showHint(){
+  clearHi();
+  var h=findHint();
+  if(!h){setMsg('Нет ходов — перемешиваем!');initBoard();render();return;}
+  var bd=document.getElementById('bd');
+  var a=bd.children[h[0]*C+h[1]],b=bd.children[h[2]*C+h[3]];
+  if(a)a.classList.add('hi');if(b)b.classList.add('hi');
+  setMsg('Вот возможный ход!');
+  setTimeout(clearHi,2000);
+}
+
+function findHint(){
+  var dirs=[[0,1],[1,0]],r,c,d,nr,nc,m;
+  for(r=0;r<R;r++){for(c=0;c<C;c++){for(d=0;d<2;d++){
+    nr=r+dirs[d][0];nc=c+dirs[d][1];
+    if(nr>=R||nc>=C)continue;
+    swapT(r,c,nr,nc);m=findM();swapT(r,c,nr,nc);
+    if(m.length)return[r,c,nr,nc];
+  }}}
+  return null;
+}
+
+function setMsg(t){document.getElementById('msg').textContent=t;}
+
+document.getElementById('rb').addEventListener('click',function(){startLevel(0);});
+document.getElementById('hbtn').addEventListener('click',showHint);
+startLevel(0);
+</script>
+</body>
+</html>
